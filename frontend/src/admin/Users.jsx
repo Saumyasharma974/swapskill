@@ -8,7 +8,7 @@ const UserList = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/admin/users", {
+      const response = await axios.get("https://swapskill-backend1.onrender.com/api/admin/users", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -23,7 +23,7 @@ const UserList = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/admin/ban-user/${userId}`,
+        `https://swapskill-backend1.onrender.com/api/admin/ban-user/${userId}`,
         { isPublic: status },
         {
           headers: {
