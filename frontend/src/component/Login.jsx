@@ -98,9 +98,7 @@ const Navbar = () => {
           </div>
         ) : (
           <div className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
-            <span className="text-gray-700 text-sm font-medium md:mr-2">
-              👤 {user?.name || "User"}
-            </span>
+            
             <Link
               to="/profile"
               onClick={handleLinkClick}
