@@ -8,7 +8,7 @@ const Swaps = () => {
   const fetchSwaps = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/admin/swaps", {
+      const response = await axios.get("https://swapskill-backend1.onrender.com/api/admin/swaps", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
