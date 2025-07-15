@@ -1,23 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-// ✅ Backend URL
-const API_BASE = "https://swapskill-backend1.onrender.com";
-
-// ✅ Utility to decode JWT token and extract user ID
-function getUserId() {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.userId || payload.id || payload._id;
-  } catch (error) {
-    console.error("Invalid token:", error);
-    return null;
-  }
-}
-
-// ✅ Feedback Form Component
+// ✅ FeedbackForm inline
 const FeedbackForm = ({ swapId, receivedBy, onSuccess }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -34,7 +18,7 @@ const FeedbackForm = ({ swapId, receivedBy, onSuccess }) => {
       formData.append("rating", rating);
       formData.append("comment", comment);
 
-      await axios.post(`${API_BASE}/api/feedbacks`, formData, {
+      await axios.post("https://swapskill-backend1.onrender.com/api/feedbacks", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -89,7 +73,6 @@ const FeedbackForm = ({ swapId, receivedBy, onSuccess }) => {
   );
 };
 
-// ✅ Main SwapPage Component
 const SwapPage = () => {
   const [tab, setTab] = useState("send");
   const [users, setUsers] = useState([]);
@@ -107,13 +90,12 @@ const SwapPage = () => {
     },
   };
 
-  // ✅ Fetch Users and Swaps
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [userRes, swapRes] = await Promise.all([
-          axios.get(`${API_BASE}/api/users/search?skill=`, config),
-          axios.get(`${API_BASE}/api/swaps`, config),
+          axios.get("https://swapskill-backend1.onrender.com/api/users/search?skill=", config),
+          axios.get("https://swapskill-backend1.onrender.comapi/swaps", config),
         ]);
         setUsers(userRes.data);
         setSwaps(swapRes.data);
@@ -121,11 +103,9 @@ const SwapPage = () => {
         console.error("Fetch Error:", err);
       }
     };
-
     fetchData();
   }, [refresh]);
 
-  // ✅ Handle Swap Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -135,112 +115,189 @@ const SwapPage = () => {
       formData.append("skillOffered", form.skillOffered);
       formData.append("skillRequested", form.skillRequested);
 
-      await axios.post(`${API_BASE}/api/swaps`, formData, config);
-
+      await axios.post("https://swapskill-backend1.onrender.com/api/swaps", formData, config);
       setForm({ toUser: "", skillOffered: "", skillRequested: "" });
+      setTab("pending");
       setRefresh(!refresh);
     } catch (err) {
-      console.error("Swap Submit Error:", err);
+      console.error("Create Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  const updateStatus = async (id, status) => {
+    try {
+      const formData = new FormData();
+      formData.append("status", status);
+      await axios.put(`https://swapskill-backend1.onrender.com/api/swaps/${id}`, formData, config);
+      setRefresh(!refresh);
+    } catch (err) {
+      console.error("Status Error:", err);
+    }
+  };
+
+  const deleteSwap = async (id) => {
+    try {
+      await axios.delete(`https://swapskill-backend1.onrender.com/api/swaps/${id}`, config);
+      setRefresh(!refresh);
+    } catch (err) {
+      console.error("Delete Error:", err);
+    }
+  };
+
+  const pendingCount = swaps.filter((s) => s.status === "pending").length;
+
   return (
-    <div className="p-6">
-      <div className="flex space-x-4 mb-4">
-        <button
-          className={`px-4 py-2 rounded ${tab === "send" ? "bg-purple-600 text-white" : "bg-gray-300"}`}
-          onClick={() => setTab("send")}
-        >
-          Send Swap Request
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${tab === "view" ? "bg-purple-600 text-white" : "bg-gray-300"}`}
-          onClick={() => setTab("view")}
-        >
-          View Swaps
-        </button>
+    <div className="max-w-5xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-purple-700 mb-4">Swap Center</h1>
+
+      {tab !== "send" && pendingCount > 0 && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-3 mb-4 rounded">
+          You have {pendingCount} pending swap request{pendingCount > 1 ? "s" : ""}.
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-3 mb-6">
+        {["send", "pending", "accepted", "rejected"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setTab(type)}
+            className={`px-4 py-2 rounded capitalize ${tab === type ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
+              }`}
+          >
+            {type === "send" ? "Send Swap" : type}
+          </button>
+        ))}
       </div>
 
+      {/* Send Swap */}
       {tab === "send" && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
           <div>
-            <label className="block font-medium mb-1">To User:</label>
+            <label className="block text-sm font-medium text-gray-700">Send To</label>
             <select
               value={form.toUser}
               onChange={(e) => setForm({ ...form, toUser: e.target.value })}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-4 py-2 rounded"
+              required
             >
               <option value="">Select a user</option>
               {users
                 .filter((u) => u._id !== userId)
-                .map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.name}
+                .map((u) => (
+                  <option key={u._id} value={u._id}>
+                    {u.name} ({u.email})
                   </option>
                 ))}
             </select>
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Skill Offered:</label>
+            <label className="block text-sm font-medium text-gray-700">Skill Offered</label>
             <input
               type="text"
               value={form.skillOffered}
               onChange={(e) => setForm({ ...form, skillOffered: e.target.value })}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-4 py-2 rounded"
               required
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Skill Requested:</label>
+            <label className="block text-sm font-medium text-gray-700">Skill Requested</label>
             <input
               type="text"
               value={form.skillRequested}
               onChange={(e) => setForm({ ...form, skillRequested: e.target.value })}
-              className="w-full border px-3 py-2 rounded"
+              className="w-full border px-4 py-2 rounded"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700"
             disabled={loading}
+            className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700"
           >
-            {loading ? "Sending..." : "Send Swap"}
+            {loading ? "Sending..." : "Send Swap Request"}
           </button>
         </form>
       )}
 
-      {tab === "view" && (
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Swap History</h3>
-          {swaps.map((swap) => (
-            <div key={swap._id} className="border p-4 mb-3 rounded bg-gray-50">
-              <p>
-                <strong>{swap.fromUser.name}</strong> offered{" "}
-                <strong>{swap.skillOffered}</strong> to{" "}
-                <strong>{swap.toUser.name}</strong> in exchange for{" "}
-                <strong>{swap.skillRequested}</strong>
-              </p>
+      {/* My Swaps */}
+      {tab !== "send" && (
+        <div className="space-y-4">
+          {swaps.filter((s) => s.status === tab).length === 0 ? (
+            <p className="text-gray-500">No {tab} swaps yet.</p>
+          ) : (
+            swaps
+              .filter((swap) => swap.status === tab)
+              .map((swap) => (
+                <div
+                  key={swap._id}
+                  className="bg-white p-4 rounded shadow flex flex-col md:flex-row justify-between"
+                >
+                  <div>
+                    <p><strong>From:</strong> {swap.fromUser?.name}</p>
+                    <p><strong>To:</strong> {swap.toUser?.name}</p>
+                    <p><strong>Offered:</strong> {swap.skillOffered}</p>
+                    <p><strong>Requested:</strong> {swap.skillRequested}</p>
+                    <p><strong>Status:</strong> <span className="capitalize text-purple-700">{swap.status}</span></p>
 
-              {/* Show feedback form only for the recipient */}
-              {swap.toUser._id === userId && (
-                <FeedbackForm
-                  swapId={swap._id}
-                  receivedBy={swap.fromUser._id}
-                  onSuccess={() => setRefresh(!refresh)}
-                />
-              )}
-            </div>
-          ))}
+                    {tab === "accepted" && (
+                      <FeedbackForm
+                        swapId={swap._id}
+                        receivedBy={swap.fromUser._id === userId ? swap.toUser._id : swap.fromUser._id}
+                        onSuccess={() => setRefresh(!refresh)}
+                      />
+                    )}
+                  </div>
+
+                  <div className="mt-4 md:mt-0 md:text-right space-x-2">
+                    {tab === "pending" && swap.toUser?._id === userId && (
+                      <>
+                        <button
+                          onClick={() => updateStatus(swap._id, "accepted")}
+                          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => updateStatus(swap._id, "rejected")}
+                          className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                    {tab === "pending" && swap.fromUser?._id === userId && (
+                      <button
+                        onClick={() => deleteSwap(swap._id)}
+                        className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+          )}
         </div>
       )}
     </div>
   );
 };
+
+function getUserId() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    return decoded.id;
+  } catch (err) {
+    return null;
+  }
+}
 
 export default SwapPage;
