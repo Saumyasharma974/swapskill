@@ -18,7 +18,7 @@ const FeedbackForm = ({ swapId, receivedBy, onSuccess }) => {
       formData.append("rating", rating);
       formData.append("comment", comment);
 
-      await axios.post("http://localhost:5000/api/feedbacks", formData, {
+      await axios.post("https://swapskill-frontend.onrender.com/api/feedbacks", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -94,8 +94,8 @@ const SwapPage = () => {
     const fetchData = async () => {
       try {
         const [userRes, swapRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/users/search?skill=", config),
-          axios.get("http://localhost:5000/api/swaps", config),
+          axios.get("https://swapskill-frontend.onrender.com/api/users/search?skill=", config),
+          axios.get("https://swapskill-frontend.onrender.com/api/swaps", config),
         ]);
         setUsers(userRes.data);
         setSwaps(swapRes.data);
@@ -115,7 +115,7 @@ const SwapPage = () => {
       formData.append("skillOffered", form.skillOffered);
       formData.append("skillRequested", form.skillRequested);
 
-      await axios.post("http://localhost:5000/api/swaps", formData, config);
+      await axios.post("https://swapskill-frontend.onrender.com/api/swaps", formData, config);
       setForm({ toUser: "", skillOffered: "", skillRequested: "" });
       setTab("pending");
       setRefresh(!refresh);
@@ -130,7 +130,7 @@ const SwapPage = () => {
     try {
       const formData = new FormData();
       formData.append("status", status);
-      await axios.put(`http://localhost:5000/api/swaps/${id}`, formData, config);
+      await axios.put(`https://swapskill-frontend.onrender.com/api/swaps/${id}`, formData, config);
       setRefresh(!refresh);
     } catch (err) {
       console.error("Status Error:", err);
@@ -139,7 +139,7 @@ const SwapPage = () => {
 
   const deleteSwap = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/swaps/${id}`, config);
+      await axios.delete(`https://swapskill-frontend.onrender.com/api/swaps/${id}`, config);
       setRefresh(!refresh);
     } catch (err) {
       console.error("Delete Error:", err);
