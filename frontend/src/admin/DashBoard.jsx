@@ -1,6 +1,10 @@
+// src/pages/DashBoard.jsx
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Bar, Doughnut } from 'react-chartjs-2';
+import { downloadCSV } from '../../utils/exportCSV.js';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -46,6 +50,27 @@ const DashBoard = () => {
     fetchDashboardData();
   }, []);
 
+  const formatUsers = users.map(user => ({
+    Name: user.name,
+    Email: user.email,
+    Role: user.role,
+    CreatedAt: new Date(user.createdAt).toLocaleString(),
+  }));
+
+  const formatFeedbacks = feedbacks.map(fb => ({
+    Name: fb.user?.name || '',
+    Email: fb.user?.email || '',
+    Message: fb.message,
+    CreatedAt: new Date(fb.createdAt).toLocaleString(),
+  }));
+
+  const formatSwaps = swaps.map(swap => ({
+    From: swap.fromUser?.name || '',
+    To: swap.toUser?.name || '',
+    Status: swap.status,
+    CreatedAt: new Date(swap.createdAt).toLocaleString(),
+  }));
+
   const swapStatusCount = {
     pending: swaps.filter((s) => s.status === 'pending').length,
     accepted: swaps.filter((s) => s.status === 'accepted').length,
@@ -81,35 +106,75 @@ const DashBoard = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-purple-700 mb-6">Admin Dashboard</h1>
+    <div className="p-4 md:p-6">
+      <h1 className="text-2xl md:text-3xl font-bold text-purple-700 mb-6">Admin Dashboard</h1>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <div className="bg-purple-100 text-purple-800 p-6 rounded-lg shadow hover:scale-105 transition">
-          <h2 className="text-xl font-semibold">Total Users</h2>
-          <p className="text-3xl mt-2">{users.length}</p>
+          <h2 className="text-lg md:text-xl font-semibold">Total Users</h2>
+          <p className="text-2xl md:text-3xl mt-2">{users.length}</p>
         </div>
         <div className="bg-blue-100 text-blue-800 p-6 rounded-lg shadow hover:scale-105 transition">
-          <h2 className="text-xl font-semibold">Total Feedback</h2>
-          <p className="text-3xl mt-2">{feedbacks.length}</p>
+          <h2 className="text-lg md:text-xl font-semibold">Total Feedback</h2>
+          <p className="text-2xl md:text-3xl mt-2">{feedbacks.length}</p>
         </div>
         <div className="bg-green-100 text-green-800 p-6 rounded-lg shadow hover:scale-105 transition">
-          <h2 className="text-xl font-semibold">Total Swaps</h2>
-          <p className="text-3xl mt-2">{swaps.length}</p>
+          <h2 className="text-lg md:text-xl font-semibold">Total Swaps</h2>
+          <p className="text-2xl md:text-3xl mt-2">{swaps.length}</p>
         </div>
+      </div>
+
+      {/* CSV Download Buttons */}
+      <div className="mt-8 mb-10 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+        <button
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded w-full sm:w-auto"
+          onClick={() => downloadCSV(formatUsers, 'users-report.csv')}
+        >
+          Download Users CSV
+        </button>
+
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full sm:w-auto"
+          onClick={() => downloadCSV(formatFeedbacks, 'feedbacks-report.csv')}
+        >
+          Download Feedbacks CSV
+        </button>
+
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full sm:w-auto"
+          onClick={() => downloadCSV(formatSwaps, 'swaps-report.csv')}
+        >
+          Download Swaps CSV
+        </button>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-xl shadow">
+        <div className="bg-white p-6 rounded-xl shadow w-full overflow-x-auto">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Data Overview</h3>
-          <Bar data={barData} options={{ responsive: true }} />
+          <div className="w-full max-w-full" style={{ height: '300px' }}>
+            <Bar
+              data={barData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow">
+        <div className="bg-white p-6 rounded-xl shadow w-full overflow-x-auto">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Swap Status</h3>
-          <Doughnut data={doughnutData} options={{ responsive: true }} />
+          <div className="w-full max-w-full" style={{ height: '300px' }}>
+            <Doughnut
+              data={doughnutData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -117,3 +182,4 @@ const DashBoard = () => {
 };
 
 export default DashBoard;
+

@@ -1,3 +1,5 @@
+// src/layout/AdminLayout.jsx
+
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../component/Sidebar';
@@ -5,20 +7,20 @@ import Header from '../component/Header';
 
 const AdminLayout = () => {
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-64">
-        <Sidebar />
-      </div>
+    <div className="min-h-screen flex flex-col sm:flex-row">
+      {/* Sidebar: already responsive inside component */}
+      <Sidebar />
 
-      {/* Main Content Area */}
-      <div className="flex-1 bg-gray-50 p-4">
-        {/* Header */}
-        <Header />
+      {/* Main Content */}
+      <div className="flex-1 bg-gray-50 min-h-screen">
+        <div className="p-4">
+          {/* Header */}
+          <Header />
 
-        {/* Page Content */}
-        <div className="mt-6">
-          <Outlet />
+          {/* Page Content */}
+          <div className="mt-6">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

@@ -23,8 +23,6 @@ const Navbar = () => {
     };
 
     checkUser();
-
-    // Optional: sync across tabs
     window.addEventListener("storage", checkUser);
     return () => window.removeEventListener("storage", checkUser);
   }, []);
@@ -33,6 +31,10 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setUser(null);
     navigate("/login");
+  };
+
+  const handleLinkClick = () => {
+    setIsOpen(false); // Close menu on navigation (optional)
   };
 
   return (
@@ -73,43 +75,49 @@ const Navbar = () => {
       </div>
 
       <div
-        className={`md:flex space-x-4 ${
+        className={`md:flex ${
           isOpen ? "block" : "hidden"
         } md:space-x-4 md:items-center md:static absolute top-full left-0 w-full md:w-auto bg-white md:bg-transparent py-4 md:py-0 px-6 md:px-0 shadow md:shadow-none z-50`}
       >
         {!user ? (
-          <>
+          <div className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
             <Link
               to="/login"
-              className="block md:inline-block px-4 py-2 rounded-md text-sm font-medium text-purple-700 border border-purple-600 hover:bg-purple-600 hover:text-white transition"
+              onClick={handleLinkClick}
+              className="w-full md:w-auto text-center px-4 py-2 rounded-md text-sm font-medium text-purple-700 border border-purple-600 hover:bg-purple-600 hover:text-white transition"
             >
               Login
             </Link>
             <Link
               to="/register"
-              className="block md:inline-block px-4 py-2 rounded-md text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition"
+              onClick={handleLinkClick}
+              className="w-full md:w-auto text-center px-4 py-2 rounded-md text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition"
             >
               Register
             </Link>
-          </>
+          </div>
         ) : (
-          <>
-            <span className="text-gray-700 text-sm font-medium mr-2">
+          <div className="flex flex-col md:flex-row md:space-x-4 space-y-2 md:space-y-0">
+            <span className="text-gray-700 text-sm font-medium md:mr-2">
               👤 {user?.name || "User"}
             </span>
             <Link
               to="/profile"
-              className="block md:inline-block px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
+              onClick={handleLinkClick}
+              className="text-center px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition"
             >
               Profile
             </Link>
             <button
-              onClick={handleLogout}
-              className="block md:inline-block px-4 py-2 rounded-md text-sm font-medium text-red-600 border border-red-600 hover:bg-red-600 hover:text-white transition"
+              onClick={() => {
+                handleLogout();
+                setIsOpen(false);
+              }}
+              className="text-center px-4 py-2 rounded-md text-sm font-medium text-red-600 border border-red-600 hover:bg-red-600 hover:text-white transition"
             >
               Logout
             </button>
-          </>
+          </div>
         )}
       </div>
     </nav>
