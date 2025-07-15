@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom"; // ✅ Import NavLink
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -18,7 +18,10 @@ export default function Register() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post("https://swapskill-backend1.onrender.com/api/auth/register", form);
+      const res = await axios.post(
+        "https://swapskill-backend1.onrender.com/api/auth/register",
+        form
+      );
       localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {
@@ -43,7 +46,9 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Name
+            </label>
             <input
               type="text"
               name="name"
@@ -55,7 +60,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -67,7 +74,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
               name="password"
@@ -88,13 +97,13 @@ export default function Register() {
         </form>
 
         <p className="text-sm text-center text-gray-500 mt-4">
-          Already have an account?{' '}
-          <a
-            href="/login"
+          Already have an account?{" "}
+          <NavLink
+            to="/login"
             className="text-purple-600 hover:underline font-medium"
           >
             Login
-          </a>
+          </NavLink>
         </p>
       </div>
     </div>
