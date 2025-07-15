@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// Dummy fallback function if getUserId is not defined
+const getUserId = () => {
+  // Replace with your actual user ID retrieval logic
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user?._id;
+};
+
 // ✅ FeedbackForm inline
 const FeedbackForm = ({ swapId, receivedBy, onSuccess }) => {
   const [rating, setRating] = useState(5);
@@ -43,7 +50,7 @@ const FeedbackForm = ({ swapId, receivedBy, onSuccess }) => {
         <label className="text-sm mr-2">Rating:</label>
         <select
           value={rating}
-          onChange={(e) => setRating(e.target.value)}
+          onChange={(e) => setRating(Number(e.target.value))}
           className="border rounded px-2 py-1"
         >
           {[5, 4, 3, 2, 1].map((r) => (
@@ -130,7 +137,7 @@ const SwapPage = () => {
     try {
       const formData = new FormData();
       formData.append("status", status);
-      await axios.put(`https://swapskill-frontend.onrender.comapi/swaps/${id}`, formData, config);
+      await axios.put(`https://swapskill-frontend.onrender.com/api/swaps/${id}`, formData, config);
       setRefresh(!refresh);
     } catch (err) {
       console.error("Status Error:", err);
@@ -139,7 +146,7 @@ const SwapPage = () => {
 
   const deleteSwap = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/swaps/${id}`, config);
+      await axios.delete(`https://swapskill-frontend.onrender.com/api/swaps/${id}`, config);
       setRefresh(!refresh);
     } catch (err) {
       console.error("Delete Error:", err);
@@ -163,8 +170,9 @@ const SwapPage = () => {
           <button
             key={type}
             onClick={() => setTab(type)}
-            className={`px-4 py-2 rounded capitalize ${tab === type ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
-              }`}
+            className={`px-4 py-2 rounded capitalize ${
+              tab === type ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
+            }`}
           >
             {type === "send" ? "Send Swap" : type}
           </button>
@@ -288,16 +296,5 @@ const SwapPage = () => {
     </div>
   );
 };
-
-function getUserId() {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-  try {
-    const decoded = JSON.parse(atob(token.split(".")[1]));
-    return decoded.id;
-  } catch (err) {
-    return null;
-  }
-}
 
 export default SwapPage;
