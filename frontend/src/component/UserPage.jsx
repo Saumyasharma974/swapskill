@@ -3,7 +3,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000"); // Change to your backend socket URL
+const socket = io("https://swapskill-backend1.onrender.com"); // Change to your backend socket URL
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -19,7 +19,7 @@ const UsersPage = () => {
   useEffect(() => {
     const fetchUsersAndRatings = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users/search?skill=", {
+        const res = await axios.get("https://swapskill-backend1.onrender.com/api/users/search?skill=", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const usersData = res.data;
@@ -29,7 +29,7 @@ const UsersPage = () => {
         await Promise.all(
           usersData.map(async (user) => {
             try {
-              const feedbackRes = await axios.get(`http://localhost:5000/api/feedbacks/${user._id}`);
+              const feedbackRes = await axios.get(`https://swapskill-backend1.onrender.com/api/feedbacks/${user._id}`);
               const feedbacks = feedbackRes.data;
 
               const average = feedbacks.length
