@@ -95,7 +95,7 @@ const SwapPage = () => {
       try {
         const [userRes, swapRes] = await Promise.all([
           axios.get("https://swapskill-backend1.onrender.com/api/users/search?skill=", config),
-          axios.get("https://swapskill-backend1.onrender.comapi/swaps", config),
+          axios.get("https://swapskill-backend1.onrender.com/api/swaps", config),
         ]);
         setUsers(userRes.data);
         setSwaps(swapRes.data);
