@@ -18,7 +18,7 @@ export default function Register() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post("	http://localhost:5000/api/auth/register", form);
+      const res = await axios.post("https://swapskill-backend1.onrender.com/api/auth/register", form);
       localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {
