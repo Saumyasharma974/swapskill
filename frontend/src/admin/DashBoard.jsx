@@ -33,9 +33,9 @@ const DashBoard = () => {
       };
 
       const [userRes, feedbackRes, swapRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/users', config),
-        axios.get('http://localhost:5000/api/admin/feedbacks', config),
-        axios.get('http://localhost:5000/api/admin/swaps', config),
+        axios.get('https://swapskill-backend1.onrender.com/api/admin/users', config),
+        axios.get('https://swapskill-backend1.onrender.com/api/admin/feedbacks', config),
+        axios.get('https://swapskill-backend1.onrender.com/api/admin/swaps', config),
       ]);
 
       setUsers(userRes.data);
