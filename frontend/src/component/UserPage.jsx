@@ -89,7 +89,7 @@ const UsersPage = () => {
 
     try {
       await axios.post(
-        "https://swapskill-frontend.onrender.com/api/swaps",
+        "https://swapskill-backend1.onrender.com/api/swaps",
         {
           toUser: selectedUser._id,
           skillOffered,
