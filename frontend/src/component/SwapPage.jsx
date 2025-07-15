@@ -163,9 +163,8 @@ const SwapPage = () => {
           <button
             key={type}
             onClick={() => setTab(type)}
-            className={`px-4 py-2 rounded capitalize ${
-              tab === type ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
-            }`}
+            className={`px-4 py-2 rounded capitalize ${tab === type ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700"
+              }`}
           >
             {type === "send" ? "Send Swap" : type}
           </button>

@@ -6,9 +6,14 @@ import Register from "./component/Register";
 import Login from "./component/Navbar";
 import PrivateRoute from "./component/ProtectedRoutes";
 import SwapPage from "./component/SwapPage";
-import DashBoard from "./component/DashBoard";
+import ProtectedRouteAdmin from "./component/ProtectedRouteAdmin";
 import Footer from "./component/Footer";
 import UsersPage from "./component/UserPage";
+import DashBoard from "./admin/DashBoard";
+import Users from "./admin/Users";
+import AdminLayout from "./admin/AdminLayout";
+import Feedback from "./admin/Feedback";
+import Swaps from "./admin/Swaps";
 
 function AppLayout() {
   const location = useLocation();
@@ -16,14 +21,24 @@ function AppLayout() {
 
   return (
     <>
-      {!isAuthPage && <Navbar/>}
+      {!isAuthPage && <Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<DashBoard />} />
+        <Route path="/dashboard" element={
+          <ProtectedRouteAdmin>
+            <DashBoard />
+          </ProtectedRouteAdmin>} />
+        <Route path="/admin" element={<ProtectedRouteAdmin><AdminLayout /></ProtectedRouteAdmin>}>
+          <Route path="dashboard" element={<DashBoard />} />
+          <Route path="users" element={<Users />} />
+          <Route path="feedback" element={<Feedback />} />
+          <Route path="swaps" element={<Swaps />} />
+        </Route>
 
+       
         <Route path="/users" element={<UsersPage />} />
         <Route
           path="/profile"

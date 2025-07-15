@@ -10,22 +10,34 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/login", {
+      email,
+      password,
+    });
+
+    localStorage.setItem("token", res.data.token);
+    console.log("Login successful:", res.data);
+    const{user}=res.data;
+    if (user.isAdmin) {
+      localStorage.setItem("isAdmin", true);
+      navigate("/admin"); // ✅ Fixed here
+    } else {
       navigate("/");
-    } catch (err) {
-      setError(
-        err.response?.data?.msg || "Login failed. Please try again later."
-      );
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    setError(
+      err.response?.data?.msg || "Login failed. Please try again later."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 px-4 py-8">

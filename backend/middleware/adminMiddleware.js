@@ -1,12 +1,8 @@
-import User from "../models/user.models.js";
-
-
-const isAdmin = async (req, res, next) => {
-  const user = await User.findById(req.user.id);
-  if (user && user.isAdmin) {
+const isAdmin = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
     next();
   } else {
-    res.status(403).json({ msg: 'Access denied: Admins only' });
+    res.status(403).json({ message: 'Access denied. Admins only.' });
   }
 };
 
