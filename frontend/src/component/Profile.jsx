@@ -25,7 +25,7 @@ export default function Profile() {
     if (!token) return;
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users/me", {
+        const res = await axios.get("https://swapskill-backend1.onrender.com/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -42,7 +42,7 @@ export default function Profile() {
 
         // Fetch feedbacks
         const feedbackRes = await axios.get(
-          `http://localhost:5000/api/feedbacks/${user._id}`
+          `https://swapskill-backend1.onrender.com/api/feedbacks/${user._id}`
         );
         const allFeedbacks = feedbackRes.data;
 
@@ -84,7 +84,7 @@ export default function Profile() {
 
     try {
       await axios.put(
-        "http://localhost:5000/api/users/me",
+        "https://swapskill-backend1.onrender.com/api/users/me",
         {
           ...profile,
           skillsOffered: profile.skillsOffered
