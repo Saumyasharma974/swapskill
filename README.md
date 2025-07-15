@@ -1,6 +1,4 @@
-Here's a complete `README.md` file for your **Skill Swap Platform** project, based on your requirements and dependencies, **without screenshots**:
 
----
 
 # 💡 SkillSwap – A Mini Skill Exchange Platform
 
