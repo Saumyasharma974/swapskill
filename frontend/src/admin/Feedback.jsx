@@ -8,7 +8,7 @@ const Feedback = () => {
     const fetchFeedback = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/admin/feedbacks", {
+        const response = await axios.get("https://swapskill-backend1.onrender.com/api/admin/feedbacks", {
           headers: {
             Authorization: `Bearer ${token}`
           }
